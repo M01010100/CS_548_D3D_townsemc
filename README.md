@@ -1,6 +1,6 @@
 # CS 548: 3D Data Processing
 ***Spring 2025***  
-***Author: <Your Name Here>***  
+***Author: Matthew Townsend***  
 ***Original Author: Dr. Michael J. Reale***  
 ***SUNY Polytechnic Institute*** 
 
