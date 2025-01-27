@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.24) 
-#set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 project( CS_548_Assignments)
  
 set(CMAKE_INSTALL_PREFIX .)

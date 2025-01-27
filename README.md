@@ -12,15 +12,15 @@ You will need to install the following manually:
 - PCL
 - Visual Code
 
-
 The rest of the dependencies will be automatically fetched by CMake.
 
 You will then need to create a miniconda environment.
 
 ## C++ Compilers
 * ***For Windows:*** Download and install [Visual Studio 2022](https://visualstudio.microsoft.com/)  
-  * Install the C++ toolchain
+  * Under Workloads, add ```Desktop development with C++```
   * Under "Individual Components", search for and add: ```C++ MFC for latest v143 build tools (x86 & x64)```
+* ***For Linux:*** Install the GNU g++ compilers: ```sudo apt install g++ make```
 * ***For Mac:*** The included Clang g++ compilers should theoretically work.
 
 ## CMake
@@ -29,6 +29,21 @@ You will need **version 3.24** or higher.
 * ***For Windows:***
   * Download the CMake installer from [here](https://cmake.org/download/).
   * If given the option, make sure to **"Add CMake to the system PATH"**.
+* ***For Linux:***
+  * Install the following dependencies first:
+```
+sudo apt install libssl-dev
+```
+  * Download the latest CMake source tar.gz file [here](https://cmake.org/download/).
+  * Run the following to compile and install it:
+```
+tar -xvzf cmake-*.tar.gz 
+cd cmake-*/
+./bootstrap 
+make 
+sudo make install
+cmake --version
+```
 * ***For Mac:***
   * Download the latest "macOS 10.13 or later" .dmg from [here](https://cmake.org/download/)
   * Install Cmake and run it
@@ -98,7 +113,7 @@ conda activate DATA3D
 
 ***For Windows:*** Open "Anaconda Prompt (miniconda3)" **as an administrator**.  
 
-***For Linux:*** Make sure the commands that follow are run using ``sudo``.
+***For Linux:*** If conda is installed system-wide, make sure the commands that follow are run using ``sudo``.
 
 Activate your environment:
 ```
@@ -177,6 +192,7 @@ Similarly, a series of visualization windows should pop up.
 ### Verifying Open3D-ML
 To verify Open3D-ML has been installed correctly:
 ```
+pip3 install tensorboard
 python -c "import open3d.ml.torch as ml3d"
 ```
 ***Under Linux***, this line should execute without errors.
@@ -208,12 +224,27 @@ conda init
 ```
 
 ## PCL
-To install the **Point Cloud Library (PCL)**, we will have to either compile it from source (Windows) or install it via a package manager (Mac).
 
 ### Windows
-We will use **Vcpkg**, which is a package manager for Windows.
 
-**PLEASE NOTE: the compilation process takes up a lot of time (hours) and space (~108GB).**
+#### Installer for VS 2022
+An [installer](https://github.com/PointCloudLibrary/pcl/releases/download/pcl-1.14.1/PCL-1.14.1-AllInOne-msvc2022-win64.exe) exists for Visual Studio 2022, x64 under [Releases](https://github.com/PointCloudLibrary/pcl/releases) on PCL's GitHub page.
+
+Running this installer will install PCL (and OpenNI2) to Program Files, but the installed libraries should only be about 2GB in size.
+
+You will need to ensure that PCL's bin directory (and a few others) are on the path, since your application will now need access to certain .dlls to run.
+
+When running the installer, make sure to select ```Add PCL to the system PATH for all users```.  You may get an error saying that the PATH variable cannot be modified.  If so, manually add the following to your system ```Path``` variable:
+```
+C:\Program Files\PCL 1.14.1\bin
+C:\Program Files\PCL 1.14.1\3rdParty\VTK\bin
+C:\Program Files\OpenNI2\Redist
+```
+
+#### Compiling from Source
+If the installer does not work, we can use **Vcpkg** (a package manager for Windows) to compile PCL from source.
+
+**PLEASE NOTE: the compilation process takes up a lot of time (hours) and space (~50GB to ~100GB).**
 
 1. Open a **Developer Command Prompt for VS 2022** ***as an Administrator***.
 2. cd to a folder where you can safely download and compile sources (e.g., ```C:/Code```).
@@ -223,7 +254,7 @@ git clone https://github.com/microsoft/vcpkg.git
 cd vcpkg
 .\bootstrap-vcpkg.bat
 ```
-4. Compile PCL (THIS WILL TAKE A WHILE):
+1. Compile PCL (THIS WILL TAKE A WHILE):
 ```
 .\vcpkg install pcl[visualization] --triplet x64-windows --host-triplet x64-windows
 ```
@@ -237,6 +268,12 @@ If you need to start over:
 5. Add a system environment variable:
    - ***Name:*** MY_VCPKG_ROOT
    - ***Value:*** "C:/Code/vcpkg"
+
+### Linux
+You should be able to install PCL via the package manager:
+```
+sudo apt get install libpcl-dev
+```
 
 ### Mac
 1. Install [Homebrew](https://brew.sh/)
@@ -278,3 +315,15 @@ To run Visual Code:
 ***For Windows:*** double-click on this version of ```Code.exe```.
 
 ***For Linux/Mac:*** run ```./code```
+
+## Licenses and Citations
+This project relies on the following dependencies:
+
+- [Open3D](https://www.open3d.org), an open-source library for 3D data processing.
+  - Open3D is licensed under the **MIT License**.
+  - Original paper: [Zhou, Park, and Koltun (2018)](https://arxiv.org/abs/1801.09847)
+  - Open3D GitHub: [https://github.com/isl-org/Open3D](https://github.com/isl-org/Open3D)
+- [Point Cloud Library (PCL)](https://pointclouds.org) for point cloud processing.
+  - PCL is licensed under the **BSD 3-Clause License**.
+  - Original paper: [Rusu & Cousins (2011)](https://ieeexplore.ieee.org/document/5980567)
+  - PCL GitHub: [https://github.com/PointCloudLibrary/pcl](https://github.com/PointCloudLibrary/pcl)

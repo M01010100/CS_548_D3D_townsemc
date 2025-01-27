@@ -1,0 +1,19 @@
+## Third-Party Dependencies
+
+This project makes use of the following third-party libraries:
+
+### Open3D
+- **License**: MIT License
+- **Author**: Open3D Contributors
+- **Source**: https://github.com/isl-org/Open3D
+- **Original Paper**: Zhou, Qian-Yi, Jaesik Park, and Vladlen Koltun. "Open3D: A Modern Library for 3D Data Processing." arXiv preprint arXiv:1801.09847 (2018).
+- **License Text**: Open3D is distributed under the MIT License, which allows unrestricted use with attribution.
+
+### Point Cloud Library (PCL)
+- **License**: BSD 3-Clause License
+- **Author**: PCL Developers
+- **Source**: https://github.com/PointCloudLibrary/pcl
+- **Original Paper**: Rusu, Radu B., and Steve Cousins. "3D is here: Point Cloud Library (PCL)." IEEE International Conference on Robotics and Automation (ICRA), 2011.
+- **License Text**: PCL is distributed under the BSD 3-Clause License, which permits use and modification with attribution.
+
+This software is **not** affiliated with or endorsed by Open3D or PCL. Any issues arising from this software are the sole responsibility of the authors.
