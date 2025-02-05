@@ -1,3 +1,6 @@
 build/
 data/*
 !data/samples/
+!data/assign01/
+*.pyc
+python/__pycache__/*
