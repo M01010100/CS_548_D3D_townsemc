@@ -1,4 +1,4 @@
-#include "include/PCD.hpp"
+#include "PCD.hpp"
 #include <pcl/visualization/pcl_visualizer.h>
 
 int main(int argc, char** argv) {
