@@ -32,6 +32,8 @@ int main(int argc, char** argv)
     viewer->addPointCloud<pcl::PointXYZ>(cloud, "sample cloud");
     viewer->setPointCloudRenderingProperties(
         pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "sample cloud");
+    viewer->setPointCloudRenderingProperties(
+        pcl::visualization::PCL_VISUALIZER_COLOR, 1,0,0, "sample cloud"); 
 
     // Keep the viewer open until the user closes it
     while (!viewer->wasStopped()) {

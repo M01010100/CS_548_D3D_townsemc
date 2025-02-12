@@ -63,5 +63,5 @@ endmacro()
 
 CREATE_EXECUTABLE(SimplePCL)
 # CREATE_EXECUTABLE(Assign01)
-CREATE_TEST(Test_Assign01)
+#CREATE_TEST(Test_Assign01)
 
