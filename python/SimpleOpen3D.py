@@ -5,7 +5,7 @@ def main():
 
     mesh = o3d.geometry.TriangleMesh.create_sphere()
     mesh.compute_vertex_normals()
-    o3d.visualization.draw(mesh, raw_mode=True)
+    o3d.visualization.draw_geometries([mesh])
     
 if __name__ == "__main__":
     main()
