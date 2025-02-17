@@ -7,7 +7,6 @@ def load_pcd(filename):
     field_map = {}
     points_count = 0
     
-    # Open and process the file
     with open(filename, 'r') as f:
         while True:
             line = f.readline().strip()
