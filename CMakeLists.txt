@@ -22,6 +22,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(FetchContent)
 
 #####################################
+# doctest
+#####################################
+
+#find_package(doctest CONFIG REQUIRED)
+
+FetchContent_Declare(
+    doctest
+    GIT_REPOSITORY https://github.com/doctest/doctest.git
+    GIT_TAG v2.4.11
+    GIT_SHALLOW 1
+)
+
+FetchContent_MakeAvailable(doctest)
+include(${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake)
+
+#####################################
 # PCL
 #####################################
 
@@ -33,7 +49,7 @@ link_directories(${PCL_LIBRARY_DIRS})
 # Get general sources
 #####################################
 
-include_directories("src/include" ${PCL_INCLUDE_DIRS})
+include_directories("src/include" ${PCL_INCLUDE_DIRS} ${doctest_INCLUDE_DIR})
 
 file(GLOB GENERAL_SOURCES    
     "src/lib/*.cpp"  
@@ -47,7 +63,8 @@ file(GLOB GENERAL_SOURCES
 #####################################
 
 set(ALL_LIBRARIES 
-    ${PCL_LIBRARIES})
+    ${PCL_LIBRARIES}
+    doctest::doctest)
 
 macro(CREATE_EXECUTABLE target)
     add_executable(${target} ${GENERAL_SOURCES} "./src/app/${target}.cpp")
@@ -58,10 +75,14 @@ endmacro()
 macro(CREATE_TEST target)
     add_executable(${target} ${GENERAL_SOURCES} "./src/tests/${target}.cpp")
     target_link_libraries(${target} PRIVATE ${ALL_LIBRARIES})    
-    add_test(NAME ${target} COMMAND ${target}) 
+
+    doctest_discover_tests(
+        ${target} 
+        TEST_PREFIX "${target}::"
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+
 endmacro()
 
 CREATE_EXECUTABLE(SimplePCL)
-# CREATE_EXECUTABLE(Assign01)
-#CREATE_TEST(Test_Assign01)
-
+CREATE_EXECUTABLE(Assign01)
+CREATE_TEST(Test_Assign01)
