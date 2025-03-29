@@ -15,23 +15,47 @@ def main():
     min_sample_size = 0.001
     max_sample_size = 1.0
     '''
-    
+    '''
     # UNIFORM
     sample_size = 1
     sample_inc = 10
     min_sample_size = 1
     max_sample_size = 40000
+    '''
+    
+    # Voxel
+    sample_size = 0.00001
+    sample_inc = 0.001
+    min_sample_size = 1e-6
+    max_sample_size = 1
+    
+    '''
+    # FPS
+    sample_size = 100
+    sample_inc = 100
+    min_sample_size = 100
+    max_sample_size = len(orig_model.points)
+    '''
         
     def update_clouds(vis):
         view_status = vis.get_view_status()
         #down_model = orig_model.random_down_sample(sample_size)
-        down_model = orig_model.uniform_down_sample(sample_size)
+        #down_model = orig_model.uniform_down_sample(sample_size)
+        down_model = orig_model.voxel_down_sample(sample_size)
+        #down_model = orig_model.farthest_point_down_sample(sample_size)
         
         down_model = down_model.translate((0.2, 0, 0))
+        
+        down_model.colors = o3d.utility.Vector3dVector(np.random.uniform(0, 1, size=(len(down_model.points), 3)))
+
+        down_model = down_model.translate((0.2, 0, 0))
+        voxel_grid = o3d.geometry.VoxelGrid.create_from_point_cloud(down_model, sample_size)
+        down_model = down_model.translate((-0.2, 0, 0))
         
         vis.clear_geometries()
         vis.add_geometry(orig_model)
         vis.add_geometry(down_model)
+        vis.add_geometry(voxel_grid)
         vis.set_view_status(view_status)
         
         print(f"Sample size:{sample_size:.3f}, Points:{len(down_model.points)}")

@@ -32,9 +32,9 @@ def split_box_octree(minP, maxP):
     children = []
     midP = (minP + maxP) / 2
     
-    for x in range(2):
+    for z in range(2):
         for y in range(2):
-            for z in range(2):
+            for x in range(2):
                 child_minP = np.array([
                     minP[0] if x == 0 else midP[0],
                     minP[1] if y == 0 else midP[1],
@@ -55,6 +55,8 @@ def get_distance_from_box(minP, maxP, point):
             distance += (minP[i] - point[i]) ** 2
         elif point[i] > maxP[i]:
             distance += (point[i] - maxP[i]) ** 2
+    
+    distance = np.sqrt(distance)
     return distance
 
 def get_indices_inside(points, indices, minP, maxP):
@@ -136,7 +138,7 @@ def do_radius_search_octree(cloud, tree, query_point, radius):
                     if dist_to_box <= radius_squared:
                         queue.append(child)
     
-    results.sort(key=lambda x: x[1])
+    #results.sort(key=lambda x: x[1])
     return [idx for idx, _ in results]
 
 def main():
@@ -160,3 +162,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
