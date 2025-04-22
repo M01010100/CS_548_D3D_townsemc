@@ -3,6 +3,16 @@ import open3d as o3d
 import numpy as np
 import copy
 
+def enforce_viewpoint_consistency(centroid, U, V, W, viewpoint=(0,0,30)):
+    to_view = np.array(viewpoint) - centroid
+    to_view = to_view / np.linalg.norm(to_view)
+    dot_val = np.dot(to_view, W)
+
+    if dot_val < 0:
+        W = -W
+    
+    return U, V, W
+
 def compute_distances(center, points):
     return np.sqrt(np.sum((points - center)**2, axis=1))
 
@@ -25,18 +35,13 @@ def compute_weighted_PCA(points, weights):
     cov_matrix /= total_weight
     
     eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
-    
+            
     W = eigenvectors[:, 0]  # Normal vector
     V = eigenvectors[:, 1]  # Second vector
     U = eigenvectors[:, 2]  # Most important vector
-    '''    
-    if U[0] < 0:
-        U = -U
-    if V[0] < 0:
-        V = -V    
-    if W[0] < 0:
-        W = -W
-    '''    
+
+    U, V, W = enforce_viewpoint_consistency(centroid, U, V, W)
+
     return centroid, U, V, W
 
 def project_points_to_plane(points, centroid, U, V, W):
@@ -57,24 +62,23 @@ def reverse_plane_projection(projected, centroid, U, V, W):
     
     
 def make_design_matrix_A(projected):
+    n = projected.shape[0]
+    A = np.zeros((n, 6))
+    
     u = projected[:, 0]
     v = projected[:, 1]
     
-    A = np.column_stack((
-        np.ones_like(u),
-        u,
-        v,
-        u**2,
-        u*v,
-        v**2
-    ))
+    A[:, 0] = 1        # constant term
+    A[:, 1] = u        # u term
+    A[:, 2] = v        # v term
+    A[:, 3] = u**2     # u^2 term
+    A[:, 4] = u*v      # uv term
+    A[:, 5] = v**2     # v^2 term
     
     return A
     
-def make_vector_b(projected):
-    w = projected[:, 2]
-    
-    return w.reshape(-1, 1)
+def make_vector_b(projected):    
+    return  projected[:, 2].reshape(-1, 1)
 
 def make_weight_matrix_G(weights):
     return np.diag(weights)
@@ -171,24 +175,25 @@ def visualize_clouds(all_clouds, point_show_normal=False):
     o3d.visualization.draw_geometries(adjusted_clouds,  
             point_show_normal=point_show_normal)       
       
-def main():     
-    cloud = o3d.io.read_point_cloud( 
-            "data/assign03/input/noise_pervasive_large_bunny.pcd") 
+def main():
+    cloud = o3d.io.read_point_cloud(
+            "data/assign03/input/noise_pervasive_large_bunny.pcd")
      
-    radius = 1.0 
-    sigma = radius / 3.0 
+    radius = 1.0
+    sigma = radius / 3.0
      
-    output_cloud = perform_moving_least_squares(cloud, radius, sigma) 
-           
-    output_points_only = copy.deepcopy(output_cloud) 
-    output_points_only.colors = o3d.utility.Vector3dVector([]) 
-    output_points_only.normals = o3d.utility.Vector3dVector([]) 
+    mls_cloud = perform_moving_least_squares(cloud, radius, sigma)
+    output_cloud = copy.deepcopy(mls_cloud)
+    output_cloud.normals = o3d.utility.Vector3dVector([])
+       
+    output_points_only = copy.deepcopy(mls_cloud)
+    output_points_only.colors = o3d.utility.Vector3dVector([])
+    output_points_only.normals = o3d.utility.Vector3dVector([])
      
-    output_points_normals = copy.deepcopy(output_cloud) 
-    output_points_normals.colors = o3d.utility.Vector3dVector([]) 
+    output_points_normals = copy.deepcopy(mls_cloud)
+    output_points_normals.colors = o3d.utility.Vector3dVector([])
               
-    visualize_clouds([[cloud, output_points_only,  
-              output_points_normals, output_cloud]])     
- 
+    visualize_clouds([[cloud, output_points_only, output_points_normals, 
+    output_cloud]], point_show_normal=True)
 if __name__ == "__main__": 
     main()
