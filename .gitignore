@@ -4,5 +4,6 @@ data/*
 !data/assign01/
 !data/assign02/
 !data/assign03/
+!data/assign04/
 *.pyc
 python/__pycache__/*
