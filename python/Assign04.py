@@ -5,6 +5,7 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 def get_matching_points(p_points, q_points):
+    #KDtre from scipy.spatial
     kdtree = cKDTree(q_points)
     _, indices = kdtree.query(p_points)
     
@@ -21,19 +22,24 @@ def compute_point_to_point_iteration(p_points, q_points):
     match_indices = get_matching_points(p_points, q_points)
     q_matches = q_points[match_indices]
     
+    # Get Centered cloud
     centered_p, p_centroid = get_centered_cloud(p_points)
     centered_q, q_centroid = get_centered_cloud(q_matches)
     
+    #Cros-var matrix
     cross_variance = centered_p.T @ centered_q
     
+    # SVD
     U, _, Vh = np.linalg.svd(cross_variance)
     V = Vh.T
     R = V @ U.T
     
+    # Check 
     if np.linalg.det(R) < 0:
         V[:, 2] = -V[:, 2] 
         R = V @ U.T
     
+    # Translation
     Tr = q_centroid - (R @ p_centroid)
     updated_p_points = (R @ p_points.T).T + Tr
     
@@ -58,7 +64,7 @@ def do_point_to_point_icp(p_points, q_points, max_iter, min_rmse):
     current_p_points = np.copy(p_points)
     
     while current_rmse > min_rmse:
-        
+        #Iterate ICP
         updated_p_points, q_matches, R, Tr = compute_point_to_point_iteration(current_p_points, q_points)
         
         current_transform = create_transform_4x4(R, Tr)        
