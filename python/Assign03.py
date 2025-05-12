@@ -28,11 +28,16 @@ def compute_weighted_PCA(points, weights):
     
     centered_points = points - centroid
     
+    '''
     cov_matrix = np.zeros((3, 3))
     for i in range(len(points)):
         point = centered_points[i].reshape(3, 1)
-        cov_matrix += weights[i] * (point @ point.T)
+        M = weights[i] * (point @ point.T)
+        cov_matrix += M
     cov_matrix /= total_weight
+    '''
+    
+    cov_matrix = np.dot((centered_points * weights[:, None]).T, centered_points) / total_weight
     
     eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
             
@@ -122,7 +127,7 @@ def fit_to_polynomial(center, points, sigma):
     center_reshaped = center.reshape(1, 3)
     updated_center = project_points_to_polynomial(center_reshaped, centroid, U, V, W, a)
     
-    return updated_center[0], W
+    return updated_center, W
 
 def perform_moving_least_squares(cloud, radius, sigma):
     kdtree = o3d.geometry.KDTreeFlann(cloud)
